@@ -1,0 +1,57 @@
+Departments(_departmentName_, departmentAbbreviation)
+    (departmentAbbreviation) UNIQUE
+
+Programs(_programName_, programAbbreviation)
+    department -> Departments.departmentName
+
+Branches(_programName_, _branchName_)
+    programName -> Programs.programName
+
+Students(_studentIdnr_, studentName, login, programName)
+    programName -> Programs.programName
+    (login) UNIQUE
+
+Courses(_courseCode_, courseName, credits, departmentName)
+    departmentName -> Departments.departmentName
+
+Taken(_studentIdnr_, _courseCode_, grade)
+    studentIdnr -> Students.studentIdnr
+    courseCode -> Courses.courseCode
+
+LimitedCourses(_courseCode_, capacity)
+    courseCode -> Courses.courseCode
+    
+WaitingList(_studentIdnr_, _courseCode_, position)
+    studentIdnr -> Students.studentIdnr
+    courseCode -> LimitedCourses.courseCode
+    (courseCode, position) UNIQUE
+
+Classifications(_classification_)
+
+Classified(_courseCode_, _classification_)
+    courseCode -> Courses.courseCode
+    classification -> Classifications.classification
+
+StudentBranches(_studentIdnr_, _programName_, branchName)
+  studentIdnr, programName -> Students.studentIdnr, Students.programName
+  programName, branchName -> Branches.programName, Branches.branchName
+
+MandatoryProgram(_courseCode_, _programName_)
+    courseCode -> Courses.courseCode
+    programName -> Programs.programName
+
+MandatoryBranch(_courseCode_, _branchName_, _programName_)
+    courseCode -> Courses.courseCode
+    programName, branchName -> Branches.programName, Branches.branchName
+
+RecommendedBranch(_courseCode_, _branchName_, _programName_)
+    courseCode -> Courses.courseCode
+    programName, branchName -> Branches.programName, Branches.branchName
+
+Registered(_studentIdnr_, _courseCode_)
+    studentIdnr -> Students.studentIdnr
+    courseCode -> Courses.courseCode
+
+Requirements(_courseCode_, _requires_)
+    courseCode -> Courses.courseCode
+    requires -> Courses.courseCode

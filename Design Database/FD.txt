@@ -1,0 +1,68 @@
+Domain:
+D(studentIdnr, *studentName, *login, *branchName, *programName, *programAbbreviation,
+courseCode, courseName, credits, departmentName, departmentAbbreviation, capacity,
+classification, grade, position)
+
+-- a) Functional dependencies --
+
+courseCode -> courseName, credits, departmentName, capacity
+studentIdnr -> branchName
+studentIdnr -> studentName, login, programName
+studentIdnr courseCode -> grade
+studentIdnr courseCode -> position
+position courseCode -> studentIdnr
+programName -> programAbbreviation
+departmentName -> departmentAbbreviation
+departmentAbbreviation -> departmentName
+login -> studentIdnr
+
+-- b) BCNF schema --
+D(studentIdnr, *studentName, *login, *branchName, *programName, *programAbbreviation,
+courseCode, courseName, credits, departmentName, departmentAbbreviation, capacity,
+classification, grade, position)
+
+R1(_studentIdnr_, studentName, login, branchName, programName, programAbbreviation)
+----------------------------
+R11(programName, programAbbreviation) // BCNF
+R12(studentIdnr, studentName, login, branchName, programName) //BCNF
+-------------------------------------------------------------------------------------------------------
+R2(_studentIdnr_, courseCode, courseName, credits, departmentName, departmentAbbreviation, capacity,
+classification, grade, position)
+----------------------------------
+R21(courseCode, courseName, credits, departmentName, capacity) //BCNF
+R211(departmentName, departmentAbbreviation) //BCNF
+-------------------------------------
+R22(studentIdnr, courseCode, classification, grade, position)
+R221(studentIdnr, courseCode, grade, position) //BCNF
+R222(studentIdnr, courseCode, classification) //BCNF
+-------------------------------------------------------------------------------------------------------------------
+R11(programName, programAbbreviation) // BCNF
+R12(studentIdnr, studentName, login, branchName, programName) //BCNF
+R21(courseCode, courseName, credits, departmentName, capacity) //BCNF
+R211(departmentName, departmentAbbreviation) //BCNF
+R221(studentIdnr, courseCode, grade, position) //BCNF
+R222(studentIdnr, courseCode, classification) //BCNF
+------------------------------------------------------------------------------------------------------------------
+
+-- c) 4NF additions --
+
+studentIdnr courseCode ->> classification
+
+The following relation has a multivalued dependency (MVD).
+R222(studentIdnr, courseCode, classification) //BCNF but NOT 4NF
+
+R222(studentIdnr, courseCode, classification) has a multivalued dependency (MVD) and
+    needs to be further normalised.
+
+That's why we divide it into two relations so they will be in 4NF:
+R2221(studentIdnr, courseCode)
+R2222(courseCode, classification)
+
+So, the final list of normalised relations:
+R11(programName, programAbbreviation) // BCNF AND 4NF
+R12(studentIdnr, studentName, login, branchName, programName) //BCNF AND 4NF
+R21(courseCode, courseName, credits, departmentName, capacity) //BCNF AND 4NF
+R211(departmentName, departmentAbbreviation) //BCNF AND 4NF
+R221(studentIdnr, courseCode, grade, position) //BCNF AND 4NF
+R2221(studentIdnr, courseCode) //BCNF AND 4NF
+R2222(studentIdnr, classification) //BCNF AND 4NF
